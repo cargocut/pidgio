@@ -24,4 +24,5 @@
     "A tool for describing JSONRPC servers on processes that uses Pidgin as its format")
   (depends
     (ocaml (>= 5.0.0))
-    pidgin))
+    pidgin
+    highway))
