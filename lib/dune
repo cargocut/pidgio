@@ -1,3 +1,4 @@
 (library
  (name pidgio)
- (public_name pidgio))
+ (public_name pidgio)
+ (libraries pidgin))
