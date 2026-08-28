@@ -1,0 +1,3 @@
+(library
+ (name pidgio)
+ (public_name pidgio))
