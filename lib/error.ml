@@ -12,7 +12,7 @@ type t =
   | Method_not_found of
       { body : string
       ; id : int option
-      ; meth : string
+      ; meth : string list
       }
   | Invalid_params of
       { body : string
@@ -115,7 +115,7 @@ let to_pidgin = function
     let data = mk_pidgin_error error in
     mk ~body ~code:32600 ~data "Invalid request"
   | Method_not_found { body; id; meth } ->
-    let data = Pidgin.Repr.string meth in
+    let data = Pidgin.Repr.(list_of string meth) in
     mk ~body ~code:32601 ~data ?id "Method not found"
   | Invalid_params { body; id; error } ->
     let data = mk_pidgin_error error in

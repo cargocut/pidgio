@@ -1,4 +1,4 @@
 (library
  (name pidgio)
  (public_name pidgio)
- (libraries pidgin))
+ (libraries pidgin highway))

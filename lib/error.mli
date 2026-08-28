@@ -29,7 +29,7 @@ val invalid_request : body:string -> Pidgin.Check.value_error -> t
 
 (** [method_not_found ?id ~body meth] when then given [meth] of the
     request [id] is not available. *)
-val method_not_found : ?id:int -> body:string -> string -> t
+val method_not_found : ?id:int -> body:string -> string list -> t
 
 (** [invalid_params ?id ~body validation_error] when the incoming
     request of [id] can't validate params. *)
