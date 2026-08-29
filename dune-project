@@ -24,5 +24,6 @@
     "A tool for describing JSONRPC servers on processes that uses Pidgin as its format")
   (depends
     (ocaml (>= 5.0.0))
+    (primavera (>= 1.1.0))
     pidgin
     highway))

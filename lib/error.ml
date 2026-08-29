@@ -31,6 +31,15 @@ type t =
       ; message : string option
       }
 
+let with_id id error =
+  match error with
+  | Method_not_found res -> Method_not_found { res with id }
+  | Invalid_params res -> Invalid_params { res with id }
+  | Internal_error res -> Internal_error { res with id }
+  | Custom_error res -> Custom_error { res with id }
+  | x -> x
+;;
+
 let parse_error ~body = Parse_error { body }
 let invalid_request ~body error = Invalid_request { body; error }
 let method_not_found ?id ~body meth = Method_not_found { body; id; meth }

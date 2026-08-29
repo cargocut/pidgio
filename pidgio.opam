@@ -18,6 +18,7 @@ bug-reports: "https://github.com/cargocut/pidgio/issues"
 depends: [
   "dune" {>= "3.24"}
   "ocaml" {>= "5.0.0"}
+  "primavera" {>= "1.1.0"}
   "pidgin"
   "highway"
   "odoc" {with-doc}

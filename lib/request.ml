@@ -9,6 +9,8 @@ type 'a t =
   ; params : 'a
   }
 
+type pidgin = Pidgin.Repr.t t
+
 let sanitize_path = function
   | "" :: xs | xs -> xs
 ;;

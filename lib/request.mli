@@ -12,6 +12,9 @@
     for multiple stages in the service selection. *)
 type 'a t
 
+(** A request from a pidgin result. *)
+type pidgin = Pidgin.Repr.t t
+
 (** {1 Build requests} *)
 
 (** [make ?id ~meth params] build a request object. *)

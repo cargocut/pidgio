@@ -50,6 +50,11 @@ val custom_error
   -> unit
   -> t
 
+(** {1 Helpers} *)
+
+(** Attach an ID to an error (for response). *)
+val with_id : int option -> t -> t
+
 (** {1 Serialization}
 
     From the server's perspective, errors must be serialized only
