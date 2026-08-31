@@ -12,6 +12,8 @@ module Service = Service
 
 (* Type aliases *)
 
+type ('a, 'handler) eff = ('a, 'handler) Primavera.t
+type pidgin = Pidgin.Repr.t
 type error = Error.t
 type 'params request = 'params Request.t
 type 'a args = 'a Highway.Args.t
@@ -32,6 +34,14 @@ let char = Highway.Pattern.char
 let bool = Highway.Pattern.bool
 let opt = Highway.Pattern.opt
 
+(* Params definition *)
+
+let params = Params.make
+
 (* Routes *)
 
 let route = Route.make
+
+(* Services *)
+
+let service = Service.make

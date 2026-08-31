@@ -7,6 +7,13 @@
 
     Re-exporting utility types to simplify the API. *)
 
+(** Hold a value of type ['a] that needs ['handler] to be
+    performed. *)
+type ('a, 'handler) eff = ('a, 'handler) Primavera.t
+
+(** Service should return a pidgin expression. *)
+type pidgin = Pidgin.Repr.t
+
 (** Errors that can occurs. *)
 type error = Error.t
 
@@ -74,6 +81,11 @@ val bool : (bool -> 'a, 'a) pattern
     value is present or not in a route path. *)
 val opt : ?empty:string -> 'a hole -> ('a option -> 'b, 'b) pattern
 
+(** {1 Params definition} *)
+
+(** Build an iso for validating/producing parameters. *)
+val params : 'a Pidgin.Check.t -> 'a Pidgin.Repr.conv -> 'a params
+
 (** {1 Building routes} *)
 
 (** [route path param_check] wrap a {!type:path} and a
@@ -82,6 +94,27 @@ val route
   :  ('args, Highway.Void.t) path
   -> 'params params
   -> ('args, 'params) route
+
+(** {1 Building services/endpoint} *)
+
+(** [service ?precondition ?postcondition ~route ~to_pidgin ~to_error handler]
+    Describes a service that returns a result that can be either a
+    success or an error. The router will then call the [to_pidgin] or
+    [to_error] functions to convert the result into the expected
+    Pidgin expression (which is supported by a JSON-RPC client). *)
+val service
+  :  ?precondition:(Request.pidgin -> bool)
+  -> ?postcondition:('args args -> 'params -> 'params request -> bool)
+  -> route:('args, 'params) route
+  -> to_pidgin:
+       ('args args -> 'params -> 'params request -> 'when_succeed -> pidgin)
+  -> to_error:
+       ('args args -> 'params -> 'params request -> 'when_failure -> error)
+  -> ('args args
+      -> 'params
+      -> 'params request
+      -> (('when_succeed, 'when_failure) result, 'handler) eff)
+  -> (pidgin, 'handler) eff service
 
 (** {1 Internal modules} *)
 
