@@ -19,3 +19,14 @@ let extract_params { params; _ } req =
   let given_params = Request.params req in
   Params.check params given_params
 ;;
+
+let prepare_request { params; path } args p =
+  let params = Params.conv params p
+  and path = args |> Highway.Path.to_list path |> String.concat "/" in
+  path, params
+;;
+
+let make_request ?id route a p =
+  let meth, params = prepare_request route a p in
+  Util.jsonrpc ?id Pidgin.Repr.[ "method", string meth; "params", params ]
+;;

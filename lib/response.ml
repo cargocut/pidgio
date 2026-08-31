@@ -3,10 +3,7 @@
 
    SPDX-License-Identifier: BSD-3-Clause *)
 
-let result req tail =
-  let open Pidgin.Repr in
-  record ([ "jsonrpc", string "2.0"; "id", option int (Request.id req) ] @ tail)
-;;
+let result req tail = Util.jsonrpc ?id:(Request.id req) tail
 
 let from_error req error =
   let body = Request.body req in

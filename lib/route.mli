@@ -30,3 +30,19 @@ val extract_path : ('args, _) t -> _ Request.t -> 'args Highway.args option
 val extract_params
   :  (_, 'params) t
   -> (Pidgin.Repr.t Request.t, 'params) Pidgin.Check.fn
+
+(** Prepare a request for being called. *)
+val prepare_request
+  :  ('args, 'params) t
+  -> 'args Highway.args
+  -> 'params
+  -> string * Pidgin.Repr.t
+
+(** [make_request ?id route args params] builds the body of a request
+    (to be used by a client). *)
+val make_request
+  :  ?id:int
+  -> ('args, 'params) t
+  -> 'args Highway.args
+  -> 'params
+  -> Pidgin.Repr.t

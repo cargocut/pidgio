@@ -6,6 +6,8 @@
 module Error = Error
 module Request = Request
 module Response = Response
+module Params = Params
+module Route = Route
 module Service = Service
 
 (* Type aliases *)
