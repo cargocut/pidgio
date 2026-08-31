@@ -4,67 +4,36 @@
    SPDX-License-Identifier: BSD-3-Clause *)
 
 type t =
-  | Parse_error of { body : string }
-  | Invalid_request of
-      { body : string
-      ; error : Pidgin.Check.value_error
-      }
-  | Method_not_found of
-      { body : string
-      ; id : int option
-      ; meth : string list
-      }
-  | Invalid_params of
-      { body : string
-      ; id : int option
-      ; error : Pidgin.Check.value_error
-      }
-  | Internal_error of
-      { body : string
-      ; id : int option
-      ; message : string
-      }
+  | Parse_error
+  | Invalid_request of Pidgin.Check.value_error
+  | Method_not_found of string list
+  | Invalid_params of Pidgin.Check.value_error
+  | Internal_error of string
   | Custom_error of
-      { body : string
-      ; id : int option
-      ; code : int
+      { code : int
       ; message : string option
       }
 
-let with_id id error =
-  match error with
-  | Method_not_found res -> Method_not_found { res with id }
-  | Invalid_params res -> Invalid_params { res with id }
-  | Internal_error res -> Internal_error { res with id }
-  | Custom_error res -> Custom_error { res with id }
-  | x -> x
-;;
+let parse_error = Parse_error
+let invalid_request error = Invalid_request error
+let method_not_found meth = Method_not_found meth
+let invalid_params error = Invalid_params error
+let internal_error message = Internal_error message
 
-let parse_error ~body = Parse_error { body }
-let invalid_request ~body error = Invalid_request { body; error }
-let method_not_found ?id ~body meth = Method_not_found { body; id; meth }
-let invalid_params ?id ~body error = Invalid_params { id; body; error }
-let internal_error ?id ~body message = Internal_error { id; body; message }
-
-let custom_error ?id ~body ~code ?message () =
+let custom_error ~code ?message () =
   let code = 32000 + code in
-  Custom_error { id; body; code; message }
+  Custom_error { code; message }
 ;;
 
 let mk_code code = 0 - Int.abs code
 
-let mk ?id ?data ~body ~code message =
+let mk ?data ~body ~code message =
   let open Pidgin.Repr in
   record
-    [ "jsonrpc", string "2.0"
-    ; "id", option int id
-    ; ( "error"
-      , record
-          [ "code", int (mk_code code)
-          ; "message", string message
-          ; "body", string body
-          ; "data", option Fun.id data
-          ] )
+    [ "code", int (mk_code code)
+    ; "message", string message
+    ; "body", string body
+    ; "data", option Fun.id data
     ]
 ;;
 
@@ -118,19 +87,19 @@ and mk_pidgin_record_error (err : Pidgin.Check.record_error) =
       [ "message", string "Invalid subrecord"; "error", mk_pidgin_error err ]
 ;;
 
-let to_pidgin = function
-  | Parse_error { body } -> mk ~body ~code:32700 "Parse error"
-  | Invalid_request { body; error } ->
+let to_pidgin ~body = function
+  | Parse_error -> mk ~body ~code:32700 "Parse error"
+  | Invalid_request error ->
     let data = mk_pidgin_error error in
     mk ~body ~code:32600 ~data "Invalid request"
-  | Method_not_found { body; id; meth } ->
+  | Method_not_found meth ->
     let data = Pidgin.Repr.(list_of string meth) in
-    mk ~body ~code:32601 ~data ?id "Method not found"
-  | Invalid_params { body; id; error } ->
+    mk ~body ~code:32601 ~data "Method not found"
+  | Invalid_params error ->
     let data = mk_pidgin_error error in
-    mk ?id ~body ~code:32602 ~data "Invalid params"
-  | Internal_error { body; id; message } -> mk ?id ~body ~code:32603 message
-  | Custom_error { body; id; code; message } ->
+    mk ~body ~code:32602 ~data "Invalid params"
+  | Internal_error message -> mk ~body ~code:32603 message
+  | Custom_error { code; message } ->
     let data = Pidgin.Repr.(option string message) in
-    mk ?id ~data ~body ~code "Server error"
+    mk ~data ~body ~code "Server error"
 ;;

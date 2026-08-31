@@ -5,6 +5,7 @@
 
 type 'a t =
   { meth : string list
+  ; body : string
   ; id : int option
   ; params : 'a
   }
@@ -15,10 +16,14 @@ let sanitize_path = function
   | "" :: xs | xs -> xs
 ;;
 
-let make ~meth ?id params = { meth = sanitize_path meth; params; id }
+let make ~meth ~body ?id params =
+  { meth = sanitize_path meth; params; id; body }
+;;
+
 let meth { meth; _ } = meth
 let id { id; _ } = id
 let params { params; _ } = params
+let body { body; _ } = body
 let map f req = { req with params = f req.params }
 
 let adapt_method s =
@@ -35,12 +40,12 @@ let adapt_method s =
   | _ -> failure ()
 ;;
 
-let from_pidgin hole =
+let from_pidgin ~body:body_str hole =
   let open Pidgin.Check in
   record (fun fields ->
     let+ () = guard fields "jsonrpc" (string & String.equal "2.0")
     and+ id = opt fields "id" int
     and+ meth = req fields "method" (string & adapt_method)
     and+ params = req fields "params" hole in
-    make ?id ~meth params)
+    make ?id ~body:body_str ~meth params)
 ;;

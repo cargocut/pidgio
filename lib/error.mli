@@ -11,49 +11,32 @@
 (** All errors that may occur on a Pidgio server. *)
 type t
 
-(** {1 Building errors}
+(** {1 Building errors} *)
 
-    There are a number of parameters that are common to the process of
-    generating errors:
+(** [parse_error] when the [body] request could not be parsed. *)
+val parse_error : t
 
-    - [id] the ID (int), which is optional and provided by the client.
-    - [body] The request sent as a string. The entire request as a
-      string. *)
-
-(** [parse_error ~body] when the [body] request could not be parsed. *)
-val parse_error : body:string -> t
-
-(** [invalid_request ~body validation_error] when the incoming request
+(** [invalid_request validation_error] when the incoming request
     can't be validated. *)
-val invalid_request : body:string -> Pidgin.Check.value_error -> t
+val invalid_request : Pidgin.Check.value_error -> t
 
-(** [method_not_found ?id ~body meth] when then given [meth] of the
-    request [id] is not available. *)
-val method_not_found : ?id:int -> body:string -> string list -> t
+(** [method_not_found meth] when then given [meth] is not available. *)
+val method_not_found : string list -> t
 
-(** [invalid_params ?id ~body validation_error] when the incoming
-    request of [id] can't validate params. *)
-val invalid_params : ?id:int -> body:string -> Pidgin.Check.value_error -> t
+(** [invalid_params validation_error] when the incoming request can't
+    validate params. *)
+val invalid_params : Pidgin.Check.value_error -> t
 
-(** [internal_error ?id ~body message] when an internal error for the
-    request of id [id] it is raised with the given [message]. *)
-val internal_error : ?id:int -> body:string -> string -> t
+(** [internal_error message] when an internal error occurs for the
+    incomming request.. *)
+val internal_error : string -> t
 
-(** [custom_error ?id ~body ~code ?message ()] when an error occurs on
+(** [custom_error ~code message ()] when an error occurs on
     the server side. It is used of user-defined errors. [code] should
     start at [0] (the function did the offset addition). *)
-val custom_error
-  :  ?id:int
-  -> body:string
-  -> code:int
-  -> ?message:string
-  -> unit
-  -> t
+val custom_error : code:int -> ?message:string -> unit -> t
 
 (** {1 Helpers} *)
-
-(** Attach an ID to an error (for response). *)
-val with_id : int option -> t -> t
 
 (** {1 Serialization}
 
@@ -62,4 +45,4 @@ val with_id : int option -> t -> t
 
 (** [to_pidgin err] serialize the given [err] into a Pidgin
     representation. *)
-val to_pidgin : t Pidgin.Repr.conv
+val to_pidgin : body:string -> t Pidgin.Repr.conv
