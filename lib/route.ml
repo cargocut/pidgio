@@ -4,7 +4,7 @@
    SPDX-License-Identifier: BSD-3-Clause *)
 
 type ('args, 'params) t =
-  { params : 'params Pidgin.Check.t
+  { params : 'params Params.t
   ; path : ('args, Highway.Void.t) Highway.path
   }
 
@@ -17,5 +17,5 @@ let extract_path { path; _ } req =
 
 let extract_params { params; _ } req =
   let given_params = Request.params req in
-  params given_params
+  Params.check params given_params
 ;;

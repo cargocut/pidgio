@@ -16,7 +16,7 @@ type ('args, 'params) t
 (** [make path params_validator] build a route. *)
 val make
   :  ('args, Highway.Void.t) Highway.path
-  -> 'params Pidgin.Check.t
+  -> 'params Params.t
   -> ('args, 'params) t
 
 (** {1 Routes components} *)
