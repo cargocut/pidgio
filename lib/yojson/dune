@@ -1,0 +1,4 @@
+(library
+ (name pidgio_yojson)
+ (public_name pidgio-yojson)
+ (libraries yojson pidgio))

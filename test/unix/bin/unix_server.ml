@@ -1,0 +1,43 @@
+(* Copyright (c) 2026, Cargocut and the Pidgio developers.
+   All rights reserved.
+
+   SPDX-License-Identifier: BSD-3-Clause *)
+
+module S = Pidgio_unix.Make (Pidgio_yojson)
+
+let ignored =
+  Pidgio.params (Pidgin.Check.const ()) (fun _ -> Pidgin.Repr.null ())
+;;
+
+let simple_message =
+  Pidgio.params
+    Pidgin.Check.(
+      record (fun fields ->
+        let+ message = req fields "message" string
+        and+ shout = opt fields "shout" bool in
+        message, Option.value ~default:false shout))
+    Pidgin.Repr.(
+      fun (message, shout) ->
+        record [ "message", string message; "shout", bool shout ])
+;;
+
+let () =
+  let open Pidgio in
+  let open S in
+  run
+    ~handler:object end
+    [ straight
+        ~route:(route [ s "ping" ] ignored)
+        ~to_pidgin:(fun _ _ _ -> Pidgin.Repr.string)
+        (fun [] () _ -> Primavera.return "pong")
+    ; straight
+        ~route:(route [ s "echo" ] simple_message)
+        ~to_pidgin:(fun _ _ _ -> Pidgin.Repr.string)
+        (fun [] (message, shout) _req ->
+           let open Primavera in
+           let message =
+             if shout then String.uppercase_ascii message else message
+           in
+           return message)
+    ]
+;;

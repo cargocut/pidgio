@@ -95,6 +95,7 @@ module Server = Make.Server
 
 (** {1 Internal modules} *)
 
+module Sigs = Sigs
 module Util = Util
 module Error = Error
 module Request = Request

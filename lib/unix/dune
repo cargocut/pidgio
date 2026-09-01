@@ -1,0 +1,4 @@
+(library
+ (name pidgio_unix)
+ (public_name pidgio-unix)
+ (libraries unix pidgio))

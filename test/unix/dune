@@ -1,0 +1,6 @@
+(cram
+ (applies_to :whole_subtree)
+ (deps
+  (package pidgio)
+  (package pidgio-unix)
+  %{exe:bin/unix_server.exe}))

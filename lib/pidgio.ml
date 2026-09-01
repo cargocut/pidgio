@@ -3,6 +3,7 @@
 
    SPDX-License-Identifier: BSD-3-Clause *)
 
+module Sigs = Sigs
 module Util = Util
 module Error = Error
 module Request = Request

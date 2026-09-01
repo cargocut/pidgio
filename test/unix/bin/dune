@@ -1,0 +1,3 @@
+(executable
+  (name unix_server)
+  (libraries pidgin pidgio pidgio-unix pidgio-yojson))

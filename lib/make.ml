@@ -26,12 +26,14 @@ struct
 end
 
 module Server
-    (Json : Sigs.JSON_DEVICE)
-    (M : Sigs.MONAD)
-    (D : Sigs.IO with type 'a t = 'a M.t) =
+    (M : Primavera.Sig.Req.S1)
+    (D : Sigs.IO with type 'a t = 'a M.t)
+    (Json : Sigs.JSON_DEVICE) =
 struct
   module Primavera = Primavera.Make.S1 (M)
 
+  type input = D.input
+  type output = D.output
   type 'a t = 'a M.t
   type ('a, 'handler) eff = ('a, 'handler) Primavera.t
   type pidgin = Pidgin.Repr.t
