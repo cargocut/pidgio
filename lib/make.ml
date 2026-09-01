@@ -6,7 +6,8 @@
 module Json
     (D : Sigs.JSON)
     (S : Pidgin.Driver.SOURCE with type t = D.t)
-    (T : Pidgin.Driver.TARGET with type t = D.t) : Sigs.JSON_DEVICE = struct
+    (T : Pidgin.Driver.TARGET with type t = D.t) =
+struct
   let request_from_string str =
     match D.from_string str with
     | None -> Error Error.parse_error
@@ -35,7 +36,11 @@ struct
   type ('a, 'handler) eff = ('a, 'handler) Primavera.t
   type pidgin = Pidgin.Repr.t
   type 'a request = 'a Request.t
+  type 'a hole = 'a Highway.Hole.t
   type 'a args = 'a Highway.args
+  type ('a, 'b) pattern = ('a, 'b) Highway.Pattern.t
+  type ('a, 'b) path = ('a, 'b) Highway.Path.t
+  type 'a params = 'a Params.t
   type ('path, 'params) route = ('path, 'params) Route.t
 
   type 'handler service =
@@ -138,7 +143,7 @@ struct
                | Some body -> M.return (Body body)))
          | line ->
            let hdlen =
-             match Parser.line_as_content_length line with
+             match Util.line_as_content_length line with
              | Some n -> Some n
              | None -> len
            in
@@ -154,7 +159,7 @@ struct
     | Ok req -> Primavera.run ~handler (one_of req) services
   ;;
 
-  let run ~handler services input output =
+  let run input output ~handler services =
     let rec loop () =
       let* state = read_frame input in
       match state with

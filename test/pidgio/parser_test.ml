@@ -10,9 +10,7 @@ open struct
   let valid_content_length1 =
     test_case "Parse a valid content-length header" `Quick (fun () ->
       let expected = Some 42
-      and computed =
-        Parser.line_as_content_length "Content-Length: 42\r\n\r\n"
-      in
+      and computed = Util.line_as_content_length "Content-Length: 42\r\n\r\n" in
       check (option int) "should be equal" expected computed)
   ;;
 
@@ -20,7 +18,7 @@ open struct
     test_case "Parse a valid content-length header" `Quick (fun () ->
       let expected = Some 42876544
       and computed =
-        Parser.line_as_content_length "Content-Length: 42876544\r\n\r\n"
+        Util.line_as_content_length "Content-Length: 42876544\r\n\r\n"
       in
       check (option int) "should be equal" expected computed)
   ;;
@@ -29,7 +27,7 @@ open struct
     test_case "Parse a valid content-length header" `Quick (fun () ->
       let expected = Some 42876544
       and computed =
-        Parser.line_as_content_length "Content-Length: 042876544\r\n\r\n"
+        Util.line_as_content_length "Content-Length: 042876544\r\n\r\n"
       in
       check (option int) "should be equal" expected computed)
   ;;
@@ -38,7 +36,7 @@ open struct
     test_case "Parse an invalid content-length header" `Quick (fun () ->
       let expected = None
       and computed =
-        Parser.line_as_content_length "content-length: 042876544\r\n\r\n"
+        Util.line_as_content_length "content-length: 042876544\r\n\r\n"
       in
       check (option int) "should be equal" expected computed)
   ;;
@@ -46,7 +44,7 @@ open struct
   let invvalid_content_length2 =
     test_case "Parse an invalid content-length header" `Quick (fun () ->
       let expected = None
-      and computed = Parser.line_as_content_length "foobar" in
+      and computed = Util.line_as_content_length "foobar" in
       check (option int) "should be equal" expected computed)
   ;;
 end

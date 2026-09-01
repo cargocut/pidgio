@@ -7,3 +7,9 @@ let jsonrpc ?id value =
   Pidgin.Repr.(
     record ([ "jsonrpc", string "2.0"; "id", option int id ] @ value))
 ;;
+
+let line_as_content_length s =
+  match String.split_on_char ':' s with
+  | [ "Content-Length"; len ] -> int_of_string_opt (String.trim len)
+  | _ -> None
+;;

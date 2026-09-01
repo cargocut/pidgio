@@ -7,15 +7,8 @@
 
     Re-exporting utility types to simplify the API. *)
 
-(** Hold a value of type ['a] that needs ['handler] to be
-    performed. *)
-type ('a, 'handler) eff = ('a, 'handler) Primavera.t
-
 (** Service should return a pidgin expression. *)
 type pidgin = Pidgin.Repr.t
-
-(** Errors that can occurs. *)
-type error = Error.t
 
 (** [args] type describes a heterogeneous list used to generate links
     associated with a route. It can also serve as a controller
@@ -44,9 +37,6 @@ type ('hole, 'params) route = ('hole, 'params) Route.t
 
 (** [request] materialize the incomming request. *)
 type 'params request = 'params Request.t
-
-(** [service] is a controller attached to a {!type:route}. *)
-type 'response service = 'response Service.t
 
 (** {1 Describing patterns} *)
 
@@ -95,35 +85,20 @@ val route
   -> 'params params
   -> ('args, 'params) route
 
-(** {1 Building services/endpoint} *)
+(** {1 Buidling JSON Handler} *)
 
-(** [service ?precondition ?postcondition ~route ~to_pidgin ~to_error handler]
-    Describes a service that returns a result that can be either a
-    success or an error. The router will then call the [to_pidgin] or
-    [to_error] functions to convert the result into the expected
-    Pidgin expression (which is supported by a JSON-RPC client). *)
-val service
-  :  ?precondition:(Request.pidgin -> bool)
-  -> ?postcondition:('args args -> 'params -> 'params request -> bool)
-  -> route:('args, 'params) route
-  -> to_pidgin:
-       ('args args -> 'params -> 'params request -> 'when_succeed -> pidgin)
-  -> to_error:
-       ('args args -> 'params -> 'params request -> 'when_failure -> error)
-  -> ('args args
-      -> 'params
-      -> 'params request
-      -> (('when_succeed, 'when_failure) result, 'handler) eff)
-  -> (pidgin, 'handler) eff service
+module Json = Make.Json
+
+(** {1 Building Server Handler} *)
+
+module Server = Make.Server
 
 (** {1 Internal modules} *)
 
+module Util = Util
 module Error = Error
 module Request = Request
 module Response = Response
 module Params = Params
-module Parser = Parser
 module Route = Route
-module Service = Service
 module Make = Make
-module Json = Make.Json
