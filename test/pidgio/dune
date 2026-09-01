@@ -1,0 +1,4 @@
+(test
+ (name pidgio_test)
+ (package pidgio)
+ (libraries alcotest pidgio))

@@ -20,6 +20,7 @@ let make ~meth ~body ?id params =
   { meth = sanitize_path meth; params; id; body }
 ;;
 
+let dummy ?(body = "") () = make ~meth:[] ~body (Pidgin.Repr.null ())
 let meth { meth; _ } = meth
 let id { id; _ } = id
 let params { params; _ } = params

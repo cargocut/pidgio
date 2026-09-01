@@ -9,6 +9,9 @@ module Response = Response
 module Params = Params
 module Route = Route
 module Service = Service
+module Parser = Parser
+module Make = Make
+module Json = Make.Json
 
 (* Type aliases *)
 

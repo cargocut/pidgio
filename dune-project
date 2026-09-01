@@ -26,4 +26,14 @@
     (ocaml (>= 5.0.0))
     (primavera (>= 1.1.0))
     pidgin
-    highway))
+    highway
+
+    ;; test setup
+    (alcotest (and :with-test (>= 1.9.1)))
+
+    ;; dev setup
+    (utop :with-dev-setup)
+    (ocamlformat :with-dev-setup)
+    (ocp-indent :with-dev-setup)
+    (merlin :with-dev-setup)
+    (ocaml-lsp-server :with-dev-setup)))

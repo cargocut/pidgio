@@ -20,6 +20,10 @@ type pidgin = Pidgin.Repr.t t
 (** [make ?id ~meth params] build a request object. *)
 val make : meth:string list -> body:string -> ?id:int -> 'a -> 'a t
 
+(** [dummy] is a dummy request for errors before having any
+    information. *)
+val dummy : ?body:string -> unit -> pidgin
+
 (** {1 Accessors} *)
 
 (** [meth req] returns the list that define the method of the

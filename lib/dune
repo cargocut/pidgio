@@ -1,4 +1,5 @@
 (library
  (name pidgio)
  (public_name pidgio)
+ (modules_without_implementation sigs)
  (libraries primavera pidgin highway))
