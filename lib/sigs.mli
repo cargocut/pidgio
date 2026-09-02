@@ -151,7 +151,9 @@ module type JSON_DEVICE = sig
 
   (** [request_from_string s] try to parse [s] as a [Pidgin]
       expression. *)
-  val request_from_string : string -> (Pidgin.Repr.t Request.t, Error.t) result
+  val request_from_string
+    :  string
+    -> (Pidgin.Repr.t Request.incomming, Error.t) result
 
   (** Returns a [Pidgin.Repr.t] into a JSON. *)
   val response_to_string : Pidgin.Repr.t -> string

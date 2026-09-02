@@ -14,9 +14,7 @@
   > } | ./bin/unix_server.exe | sed 's/\r/<CR>/g'
   Content-Length: 40<CR>
   <CR>
-  {"jsonrpc":"2.0","id":1,"result":"pong"}Content-Length: 43<CR>
-  <CR>
-  {"jsonrpc":"2.0","id":null,"result":"pong"}Content-Length: 40<CR>
+  {"jsonrpc":"2.0","id":1,"result":"pong"}Content-Length: 40<CR>
   <CR>
   {"jsonrpc":"2.0","id":3,"result":"pong"}Content-Length: 39<CR>
   <CR>
@@ -36,9 +34,7 @@
   > } | ./bin/unix_server.exe | sed 's/\r/<CR>/g'
   Content-Length: 40<CR>
   <CR>
-  {"jsonrpc":"2.0","id":1,"result":"pong"}Content-Length: 43<CR>
-  <CR>
-  {"jsonrpc":"2.0","id":null,"result":"pong"}Content-Length: 337<CR>
+  {"jsonrpc":"2.0","id":1,"result":"pong"}Content-Length: 337<CR>
   <CR>
   {"jsonrpc":"2.0","id":null,"error":{"code":-32600,"message":"Invalid request","data":{"message":"Invalid list","errors":[{"field":"method","message":"Missing field","aliases":[]},{"field":"jsonrpc","message":"Invalid field","error":{"message":"`2.0` is not equal to `wrong`","value":"wrong"},"aliases":[]}],"value":{"jsonrpc":"wrong"}}}}Content-Length: 40<CR>
   <CR>
@@ -51,3 +47,9 @@
   {"jsonrpc":"2.0","id":6,"result":"FOO"}Content-Length: 182<CR>
   <CR>
   {"code":-32602,"message":"Invalid params","data":{"message":"Invalid list","errors":[{"field":"message","message":"Missing field","aliases":[]}],"value":{"typo":"FOO","shout":true}}}
+
+
+  $ frame '[{"jsonrpc":"2.0","id":1,"method":"echo", "params": {"message": "foobar", "shout": true}}, {"jsonrpc":"2.0","id":2,"method":"echo", "params": {"message": "ocaml", "shout": false}}]' | ./bin/unix_server.exe | sed 's/\r/<CR>/g'
+  Content-Length: 86<CR>
+  <CR>
+  [{"jsonrpc":"2.0","id":1,"result":"FOOBAR"},{"jsonrpc":"2.0","id":2,"result":"ocaml"}]

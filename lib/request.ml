@@ -9,6 +9,10 @@ type 'a t =
   ; params : 'a
   }
 
+type 'a incomming =
+  | Batch of 'a t list
+  | One of 'a t
+
 type pidgin = Pidgin.Repr.t t
 
 let sanitize_path = function
@@ -44,4 +48,10 @@ let from_pidgin hole =
     and+ meth = req fields "method" (string & adapt_method)
     and+ params = req fields "params" hole in
     make ?id ~meth params)
+;;
+
+let as_incomming hole =
+  let open Pidgin.Check in
+  (list_of (from_pidgin hole) $ fun x -> Batch x)
+  / (from_pidgin hole $ fun x -> One x)
 ;;

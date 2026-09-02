@@ -12,6 +12,11 @@
     for multiple stages in the service selection. *)
 type 'a t
 
+(* The incomming request can be a batch or just one. *)
+type 'a incomming =
+  | Batch of 'a t list
+  | One of 'a t
+
 (** A request from a pidgin result. *)
 type pidgin = Pidgin.Repr.t t
 
@@ -49,3 +54,8 @@ val map : ('a -> 'b) -> 'a t -> 'b t
     deserializing parameters. Should be a valid JSONRPC incomming
     request (with the field ["jsonrpc" = "2.0"]). *)
 val from_pidgin : 'a Pidgin.Check.t -> 'a t Pidgin.Check.t
+
+(** [as_incomming hole] validate an incoming request (batch or one)
+    using [hole] for deserializing parameters. Should be a valid
+    JSONRPC incomming request (with the field ["jsonrpc" = "2.0"]). *)
+val as_incomming : 'a Pidgin.Check.t -> 'a incomming Pidgin.Check.t

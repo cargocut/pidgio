@@ -14,7 +14,7 @@ struct
     | Some body ->
       body
       |> S.translate_to_pidgin
-      |> Request.from_pidgin (fun x -> Ok x)
+      |> Request.as_incomming (fun x -> Ok x)
       |> Result.map_error (fun err -> Error.invalid_request err)
   ;;
 
@@ -104,9 +104,14 @@ struct
   ;;
 
   let one_of req services =
+    let id = Request.id req in
+    let open Primavera in
     match dispatch req services with
-    | Ok computation -> computation
-    | Error err -> Primavera.return @@ Error.to_pidgin err
+    | Ok computation ->
+      let+ result = computation in
+      Option.map (fun _ -> result) id
+    | Error err ->
+      Primavera.return @@ Option.map (fun _ -> Error.to_pidgin err) id
   ;;
 
   type header_error =
@@ -155,8 +160,18 @@ struct
 
   let handle_body handler services body =
     match Json.request_from_string body with
-    | Error err -> err |> Response.from_error Request.dummy |> M.return
-    | Ok req -> Primavera.run ~handler (one_of req) services
+    | Error err ->
+      err |> Response.from_error Request.dummy |> Option.some |> M.return
+    | Ok (One req) -> Primavera.run ~handler (one_of req) services
+    | Ok (Batch reqs) ->
+      let eff () =
+        let open Primavera in
+        let+ result = List.traverse (fun req -> one_of req services) reqs in
+        match Stdlib.List.filter_map (fun x -> x) result with
+        | [] -> None
+        | xs -> Some (Pidgin.Repr.list xs)
+      in
+      Primavera.run ~handler eff ()
   ;;
 
   let run input output ~handler services =
@@ -164,21 +179,19 @@ struct
       let* state = read_frame input in
       match state with
       | Eof -> M.return 1
-      | Malformed _ ->
-        let result =
-          Error.parse_error
-          |> Response.from_error Request.dummy
-          |> Json.response_to_string
-        in
-        let* () = D.write output result in
-        let* () = D.flush output in
-        M.return 2
+      | Malformed _ -> M.return 2
       | Body body ->
         let* result = handle_body handler services body in
-        let result = result |> Json.response_to_string in
-        let* () = D.write output result in
-        let* () = D.flush output in
-        loop ()
+        (match result with
+         | None ->
+           (* No ID so we are in a notification case *)
+           loop ()
+         | Some result ->
+           (* Some results *)
+           let result = result |> Json.response_to_string in
+           let* () = D.write output result in
+           let* () = D.flush output in
+           loop ())
     in
     loop ()
   ;;
