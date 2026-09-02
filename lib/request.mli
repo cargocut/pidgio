@@ -38,6 +38,10 @@ val meth : 'a t -> string list
 (** [id req] returns the ID of the incomming request. *)
 val id : 'a t -> int option
 
+(** [is_notification req] returns [true] if [req] is a notification,
+    [false] otherwise. *)
+val is_notification : 'a t -> bool
+
 (** [params req] returns the params of the incomming request. *)
 val params : 'a t -> 'a
 

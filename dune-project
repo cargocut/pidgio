@@ -54,7 +54,8 @@
   (depends
     (ocaml (>= 5.0.0))
     (pidgio (= :version))
-    (pidgio-yojson (and (= :version) :with-test))))
+    (pidgio-yojson (and (= :version) :with-test))
+    (virtfs :with-test)))
 
 (package
   (name pidgio-eio)

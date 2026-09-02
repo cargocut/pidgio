@@ -120,6 +120,14 @@ module type SERVER = sig
         -> (('result, 'error) result, 'handler) eff)
     -> 'handler service
 
+  (** [notify] Describes a straight service that does not output anything. *)
+  val notify
+    :  ?precondition:(pidgin request -> bool)
+    -> ?postcondition:('a args -> 'params -> 'params request -> bool)
+    -> route:('a, 'params) route
+    -> ('a args -> 'params -> 'params request -> (unit, 'handler) eff)
+    -> 'handler service
+
   (** [run in_channel out_channel ~handler services] Runs the server
       for a given [handler] and a list of given [services].*)
   val run

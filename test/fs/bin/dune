@@ -1,0 +1,3 @@
+(executable
+  (name fs_server)
+  (libraries virtfs pidgin pidgio pidgio-unix pidgio-yojson))

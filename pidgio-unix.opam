@@ -19,6 +19,7 @@ depends: [
   "ocaml" {>= "5.0.0"}
   "pidgio" {= version}
   "pidgio-yojson" {= version & with-test}
+  "virtfs" {with-test}
   "odoc" {with-doc}
 ]
 build: [

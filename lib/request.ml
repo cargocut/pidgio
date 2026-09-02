@@ -55,3 +55,5 @@ let as_incomming hole =
   (list_of (from_pidgin hole) $ fun x -> Batch x)
   / (from_pidgin hole $ fun x -> One x)
 ;;
+
+let is_notification { id; _ } = Option.is_none id

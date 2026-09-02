@@ -48,6 +48,7 @@ struct
   type 'handler service =
     | Service :
         { precondition : pidgin request -> bool
+        ; is_notif : bool
         ; route : ('path, 'params) route
         ; postcondition : 'path args -> 'params -> 'params request -> bool
         ; handler :
@@ -58,10 +59,11 @@ struct
   let make
         ?(precondition = fun _ -> true)
         ?(postcondition = fun _ _ _ -> true)
+        ?(is_notif = false)
         ~route
         handler
     =
-    Service { precondition; route; postcondition; handler }
+    Service { precondition; route; postcondition; handler; is_notif }
   ;;
 
   let straight ?precondition ?postcondition ~to_pidgin ~route handler =
@@ -81,12 +83,25 @@ struct
       | Error err -> err |> to_error args params req |> Response.from_error req)
   ;;
 
+  let notify ?precondition ?postcondition ~route handler =
+    make
+      ~is_notif:true
+      ?precondition
+      ?postcondition
+      ~route
+      (fun args params req ->
+         let open Primavera.Syntax in
+         let+ () = handler args params req in
+         Pidgin.Repr.null () |> Response.from_value req)
+  ;;
+
   let dispatch req services =
     let meth = Request.meth req in
     let rec resume = function
       | [] -> Error (Error.method_not_found meth)
-      | Service { precondition; route; postcondition; handler } :: rest ->
-        if precondition req
+      | Service { precondition; route; postcondition; handler; is_notif }
+        :: rest ->
+        if precondition req && Bool.equal (Request.is_notification req) is_notif
         then (
           match Route.extract_path route req with
           | None -> resume rest
