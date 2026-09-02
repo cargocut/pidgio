@@ -25,6 +25,7 @@ let simple_message =
 ;;
 
 let () =
+  let () = print_endline "Start the server" in
   let open Pidgio in
   let open S in
   run

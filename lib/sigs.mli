@@ -127,7 +127,7 @@ module type SERVER = sig
     -> output
     -> handler:'handler
     -> 'handler service list
-    -> unit t
+    -> int t
 end
 
 module type JSON = sig

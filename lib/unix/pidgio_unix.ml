@@ -44,6 +44,13 @@ module Make (Json : Pidgio.Sigs.JSON_DEVICE) = struct
     let () = if Sys.unix then Sys.set_signal Sys.sigpipe Sys.Signal_ignore in
     let out_channel = get_output ()
     and in_channel = get_input () in
-    run in_channel out_channel ~handler services
+    match run in_channel out_channel ~handler services with
+    | 1 ->
+      (* It is a success in fact. *)
+      exit 0
+    | 2 ->
+      let () = prerr_endline "Frame error" in
+      exit 2
+    | n -> exit n
   ;;
 end

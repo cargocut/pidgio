@@ -57,7 +57,7 @@ struct
 
   let make
         ?(precondition = fun _ -> true)
-        ?(postcondition = fun _ _ _ -> false)
+        ?(postcondition = fun _ _ _ -> true)
         ~route
         handler
     =
@@ -165,16 +165,16 @@ struct
     let rec loop () =
       let* state = read_frame input in
       match state with
-      | Eof | Malformed _ ->
-        (* KLUDGE: fallback on parse error seems a little bit radicle *)
-        let error =
+      | Eof -> M.return 1
+      | Malformed _ ->
+        let result =
           Error.parse_error
           |> Response.from_error (Request.dummy ())
           |> Json.response_to_string
         in
-        let* () = D.write output error in
+        let* () = D.write output result in
         let* () = D.flush output in
-        loop ()
+        M.return 2
       | Body body ->
         let* result = handle_body handler services body in
         let result = result |> Json.response_to_string in
