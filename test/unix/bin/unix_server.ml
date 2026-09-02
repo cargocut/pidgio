@@ -6,12 +6,11 @@
 module S = Pidgio_unix.Make (Pidgio_yojson)
 
 let ignored =
-  Pidgio.params ~check:(Pidgin.Check.const ()) ~conv:(fun _ ->
-    Pidgin.Repr.null ())
+  S.param ~check:(Pidgin.Check.const ()) ~conv:(fun _ -> Pidgin.Repr.null ())
 ;;
 
 let simple_message =
-  Pidgio.params
+  S.param
     ~check:
       Pidgin.Check.(
         record (fun fields ->
@@ -25,17 +24,16 @@ let simple_message =
 ;;
 
 let () =
-  let open Pidgio in
   let open S in
   run
     ~handler:object end
     [ straight
         ~route:(route [ s "ping" ] ignored)
-        ~to_pidgin:Encoder.string
+        ~to_pidgin:Pidgio.Encoder.string
         (fun [] () _ -> Primavera.return "pong")
     ; straight
         ~route:(route [ s "echo" ] simple_message)
-        ~to_pidgin:Encoder.string
+        ~to_pidgin:Pidgio.Encoder.string
         (fun [] (message, shout) _req ->
            let open Primavera in
            let message =

@@ -20,9 +20,11 @@ let float a p r = make Pidgin.Repr.float a p r
 let bool a p r = make Pidgin.Repr.bool a p r
 let char a p r = make Pidgin.Repr.char a p r
 let list v a p r = make (Pidgin.Repr.list_of v) a p r
+let option v a p r = make (Pidgin.Repr.option v) a p r
 
 let record ?normalize_keys a p r =
   make (Pidgin.Repr.record ?normalize_keys) a p r
 ;;
 
+let pair x y a p r = make (Pidgin.Repr.pair x y) a p r
 let error = Error.encode

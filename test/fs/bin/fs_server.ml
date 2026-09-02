@@ -6,39 +6,35 @@
 (* An example of a server that interacts with a virtual server
    provided by Virtfs. *)
 
+module S = Server
+
 let path =
   Pidgin.Prism.make
     ~conv:Pidgin.Repr.(using Virtfs.Path.to_string string)
     ~check:Pidgin.Check.(string $ Virtfs.Path.from_string)
 ;;
 
-let with_content =
-  Pidgin.Prism.make
-    ~conv:Pidgin.Repr.(pair (Pidgin.Prism.conv path) string)
-    ~check:Pidgin.Check.(pair (Pidgin.Prism.check path) string)
-;;
-
-module S = Server
+let with_content = S.(pair_param path string_param)
 
 let ls =
-  let open Pidgio in
-  S.straight
+  let open S in
+  straight
     ~route:(route [ s "ls" ] path)
-    ~to_pidgin:(Encoder.list Pidgin.Repr.string)
+    ~to_pidgin:(list_encoder Pidgin.Repr.string)
     (fun [] path _req -> Eff.ls path)
 ;;
 
 let cat =
-  let open Pidgio in
-  S.straight
+  let open S in
+  straight
     ~route:(route [ s "cat" ] path)
-    ~to_pidgin:Encoder.string
+    ~to_pidgin:string_encoder
     (fun [] path _req -> Eff.cat path)
 ;;
 
 let write_file =
-  let open Pidgio in
-  S.notify
+  let open S in
+  notify
     ~route:(route [ s "write"; s "file" ] with_content)
     (fun [] (path, content) _req ->
        let open Eff in
@@ -47,8 +43,8 @@ let write_file =
 ;;
 
 let delete_file =
-  let open Pidgio in
-  S.notify
+  let open S in
+  notify
     ~route:(route [ s "delete"; s "file" ] path)
     (fun [] path _req ->
        let open Eff in

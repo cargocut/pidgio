@@ -42,17 +42,17 @@ struct
   type 'a args = 'a Highway.args
   type ('a, 'b) pattern = ('a, 'b) Highway.Pattern.t
   type ('a, 'b) path = ('a, 'b) Highway.Path.t
-  type 'a params = 'a Pidgin.Prism.t
-  type ('path, 'params) route = ('path, 'params) Route.t
+  type 'a param = 'a Pidgin.Prism.t
+  type ('path, 'param) route = ('path, 'param) Route.t
 
   type 'handler service =
     | Service :
         { precondition : pidgin request -> bool
         ; is_notif : bool
-        ; route : ('path, 'params) route
-        ; postcondition : 'path args -> 'params -> 'params request -> bool
+        ; route : ('path, 'param) route
+        ; postcondition : 'path args -> 'param -> 'param request -> bool
         ; handler :
-            'path args -> 'params -> 'params request -> (pidgin, 'handler) eff
+            'path args -> 'param -> 'param request -> (pidgin, 'handler) eff
         }
         -> 'handler service
 
@@ -67,20 +67,20 @@ struct
   ;;
 
   let straight ?precondition ?postcondition ~to_pidgin ~route handler =
-    make ?precondition ?postcondition ~route (fun args params req ->
+    make ?precondition ?postcondition ~route (fun args param req ->
       let open Primavera.Syntax in
-      let+ result = handler args params req in
-      result |> to_pidgin args params req |> Response.from_value req)
+      let+ result = handler args param req in
+      result |> to_pidgin args param req |> Response.from_value req)
   ;;
 
   let failable ?precondition ?postcondition ~to_pidgin ~to_error ~route handler =
-    make ?precondition ?postcondition ~route (fun args params req ->
+    make ?precondition ?postcondition ~route (fun args param req ->
       let open Primavera.Syntax in
-      let+ result = handler args params req in
+      let+ result = handler args param req in
       match result with
       | Ok result ->
-        result |> to_pidgin args params req |> Response.from_value req
-      | Error err -> err |> to_error args params req |> Response.from_error req)
+        result |> to_pidgin args param req |> Response.from_value req
+      | Error err -> err |> to_error args param req |> Response.from_error req)
   ;;
 
   let notify ?precondition ?postcondition ~route handler =
@@ -89,9 +89,9 @@ struct
       ?precondition
       ?postcondition
       ~route
-      (fun args params req ->
+      (fun args param req ->
          let open Primavera.Syntax in
-         let+ () = handler args params req in
+         let+ () = handler args param req in
          Pidgin.Repr.null () |> Response.from_value req)
   ;;
 
@@ -106,11 +106,11 @@ struct
           match Route.extract_path route req with
           | None -> resume rest
           | Some args ->
-            (match Route.extract_params route req with
-             | Ok params ->
-               let req = Request.map (fun _ -> params) req in
-               if postcondition args params req
-               then Ok (handler args params req)
+            (match Route.extract_param route req with
+             | Ok param ->
+               let req = Request.map (fun _ -> param) req in
+               if postcondition args param req
+               then Ok (handler args param req)
                else resume rest
              | Error err -> Error (Error.invalid_params err)))
         else resume rest
@@ -210,4 +210,69 @@ struct
     in
     loop ()
   ;;
+
+  (* Pattern definition *)
+
+  let s = Highway.Pattern.s
+  let string = Highway.Pattern.string
+  let int = Highway.Pattern.int
+  let float = Highway.Pattern.float
+  let char = Highway.Pattern.char
+  let bool = Highway.Pattern.bool
+  let opt = Highway.Pattern.opt
+
+  (* Param definition *)
+
+  let param = Pidgin.Prism.make
+
+  let ignore_param =
+    param ~check:(Pidgin.Check.const ()) ~conv:(fun _ -> Pidgin.Repr.null ())
+  ;;
+
+  let string_param = param ~check:Pidgin.Check.string ~conv:Pidgin.Repr.string
+  let int_param = param ~check:Pidgin.Check.int ~conv:Pidgin.Repr.int
+  let float_param = param ~check:Pidgin.Check.float ~conv:Pidgin.Repr.float
+  let bool_param = param ~check:Pidgin.Check.bool ~conv:Pidgin.Repr.bool
+  let char_param = param ~check:Pidgin.Check.char ~conv:Pidgin.Repr.char
+
+  let list_param f =
+    param
+      ~check:(Pidgin.Check.list_of (Pidgin.Prism.check f))
+      ~conv:(Pidgin.Repr.list_of (Pidgin.Prism.conv f))
+  ;;
+
+  let opt_param f =
+    param
+      ~check:(Pidgin.Check.option (Pidgin.Prism.check f))
+      ~conv:(Pidgin.Repr.option (Pidgin.Prism.conv f))
+  ;;
+
+  let pair_param a b =
+    let a_conv = Pidgin.Prism.conv a
+    and b_conv = Pidgin.Prism.conv b
+    and a_check = Pidgin.Prism.check a
+    and b_check = Pidgin.Prism.check b in
+    param
+      ~check:(Pidgin.Check.pair a_check b_check)
+      ~conv:(Pidgin.Repr.pair a_conv b_conv)
+  ;;
+
+  (* Encoders *)
+
+  let encoder = Encoder.make
+  let string_encoder = Encoder.string
+  let null_encoder = Encoder.null
+  let int_encoder = Encoder.int
+  let float_encoder = Encoder.float
+  let bool_encoder = Encoder.bool
+  let char_encoder = Encoder.char
+  let list_encoder = Encoder.list
+  let opt_encoder = Encoder.option
+  let pair_encoder = Encoder.pair
+  let record_encoder = Encoder.record
+  let error_encoder = Encoder.error
+
+  (* Routes *)
+
+  let route = Route.make
 end

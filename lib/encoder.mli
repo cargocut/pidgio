@@ -50,6 +50,23 @@ val list
   -> 'c Request.t
   -> 'a list Pidgin.Repr.conv
 
+(** [option] encoder. *)
+val option
+  :  'a Pidgin.Repr.conv
+  -> 'b Highway.args
+  -> 'c
+  -> 'c Request.t
+  -> 'a option Pidgin.Repr.conv
+
+(** [pair] encoder. *)
+val pair
+  :  'a Pidgin.Repr.conv
+  -> 'b Pidgin.Repr.conv
+  -> 'c Highway.args
+  -> 'd
+  -> 'd Request.t
+  -> ('a * 'b) Pidgin.Repr.conv
+
 (** [record] encoder. *)
 val record
   :  ?normalize_keys:bool

@@ -15,7 +15,7 @@ let extract_path { path; _ } req =
   Highway.Path.from_list path meth
 ;;
 
-let extract_params { params; _ } req =
+let extract_param { params; _ } req =
   let given_params = Request.params req in
   Pidgin.Prism.check params given_params
 ;;

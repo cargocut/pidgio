@@ -25,9 +25,9 @@ val make
     with a request. *)
 val extract_path : ('args, _) t -> _ Request.t -> 'args Highway.args option
 
-(**[extract_params route req] try to extract param from a route with a
+(**[extract_param route req] try to extract param from a route with a
    request. *)
-val extract_params
+val extract_param
   :  (_, 'params) t
   -> (Pidgin.Repr.t Request.t, 'params) Pidgin.Check.fn
 
