@@ -14,7 +14,7 @@ struct
     | Some body ->
       body
       |> S.translate_to_pidgin
-      |> Request.from_pidgin ~body:str (fun x -> Ok x)
+      |> Request.from_pidgin (fun x -> Ok x)
       |> Result.map_error (fun err -> Error.invalid_request err)
   ;;
 
@@ -106,8 +106,7 @@ struct
   let one_of req services =
     match dispatch req services with
     | Ok computation -> computation
-    | Error err ->
-      Primavera.return @@ Error.to_pidgin ~body:(Request.body req) err
+    | Error err -> Primavera.return @@ Error.to_pidgin err
   ;;
 
   type header_error =
@@ -156,8 +155,7 @@ struct
 
   let handle_body handler services body =
     match Json.request_from_string body with
-    | Error err ->
-      err |> Response.from_error (Request.dummy ~body ()) |> M.return
+    | Error err -> err |> Response.from_error Request.dummy |> M.return
     | Ok req -> Primavera.run ~handler (one_of req) services
   ;;
 
@@ -169,7 +167,7 @@ struct
       | Malformed _ ->
         let result =
           Error.parse_error
-          |> Response.from_error (Request.dummy ())
+          |> Response.from_error Request.dummy
           |> Json.response_to_string
         in
         let* () = D.write output result in

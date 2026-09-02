@@ -27,12 +27,11 @@ let custom_error ~code ?message () =
 
 let mk_code code = 0 - Int.abs code
 
-let mk ?data ~body ~code message =
+let mk ?data ~code message =
   let open Pidgin.Repr in
   record
     [ "code", int (mk_code code)
     ; "message", string message
-    ; "body", string body
     ; "data", option Fun.id data
     ]
 ;;
@@ -87,21 +86,21 @@ and mk_pidgin_record_error (err : Pidgin.Check.record_error) =
       [ "message", string "Invalid subrecord"; "error", mk_pidgin_error err ]
 ;;
 
-let to_pidgin ~body = function
-  | Parse_error -> mk ~body ~code:32700 "Parse error"
+let to_pidgin = function
+  | Parse_error -> mk ~code:32700 "Parse error"
   | Invalid_request error ->
     let data = mk_pidgin_error error in
-    mk ~body ~code:32600 ~data "Invalid request"
+    mk ~code:32600 ~data "Invalid request"
   | Method_not_found meth ->
     let data = Pidgin.Repr.(list_of string meth) in
-    mk ~body ~code:32601 ~data "Method not found"
+    mk ~code:32601 ~data "Method not found"
   | Invalid_params error ->
     let data = mk_pidgin_error error in
-    mk ~body ~code:32602 ~data "Invalid params"
-  | Internal_error message -> mk ~body ~code:32603 message
+    mk ~code:32602 ~data "Invalid params"
+  | Internal_error message -> mk ~code:32603 message
   | Custom_error { code; message } ->
     let data = Pidgin.Repr.(option string message) in
-    mk ~data ~body ~code "Server error"
+    mk ~data ~code "Server error"
 ;;
 
 let encode to_err _ _ _ x = to_err x
