@@ -102,3 +102,4 @@ module Request = Request
 module Response = Response
 module Route = Route
 module Make = Make
+module Encoder = Encoder

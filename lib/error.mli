@@ -46,3 +46,6 @@ val custom_error : code:int -> ?message:string -> unit -> t
 (** [to_pidgin err] serialize the given [err] into a Pidgin
     representation. *)
 val to_pidgin : body:string -> t Pidgin.Repr.conv
+
+(** [encode error] make an error suitable for a service definition. *)
+val encode : ('result -> t) -> 'a -> 'b -> 'c -> 'result -> t

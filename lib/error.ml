@@ -103,3 +103,5 @@ let to_pidgin ~body = function
     let data = Pidgin.Repr.(option string message) in
     mk ~data ~body ~code "Server error"
 ;;
+
+let encode to_err _ _ _ x = to_err x

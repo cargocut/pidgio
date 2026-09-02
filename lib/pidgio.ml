@@ -12,6 +12,7 @@ module Route = Route
 module Make = Make
 module Json = Make.Json
 module Server = Make.Server
+module Encoder = Encoder
 
 (* Type aliases *)
 

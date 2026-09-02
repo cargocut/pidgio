@@ -31,11 +31,11 @@ let () =
     ~handler:object end
     [ straight
         ~route:(route [ s "ping" ] ignored)
-        ~to_pidgin:(fun _ _ _ -> Pidgin.Repr.string)
+        ~to_pidgin:Encoder.string
         (fun [] () _ -> Primavera.return "pong")
     ; straight
         ~route:(route [ s "echo" ] simple_message)
-        ~to_pidgin:(fun _ _ _ -> Pidgin.Repr.string)
+        ~to_pidgin:Encoder.string
         (fun [] (message, shout) _req ->
            let open Primavera in
            let message =
