@@ -24,3 +24,5 @@ let list v a p r = make (Pidgin.Repr.list_of v) a p r
 let record ?normalize_keys a p r =
   make (Pidgin.Repr.record ?normalize_keys) a p r
 ;;
+
+let error = Error.encode

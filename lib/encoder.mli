@@ -15,6 +15,15 @@ val make
   -> 'p Request.t
   -> 'a Pidgin.Repr.conv
 
+(** [error] encode for a function that produce an error. *)
+val error
+  :  ('a -> Error.t)
+  -> 'b Highway.args
+  -> 'c
+  -> 'c Request.t
+  -> 'a
+  -> Error.t
+
 (** [null] encoder. *)
 val null : 'a Highway.args -> 'b -> 'b Request.t -> 'c Pidgin.Repr.conv
 
