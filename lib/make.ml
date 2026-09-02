@@ -66,14 +66,24 @@ struct
     Service { precondition; route; postcondition; handler; is_notif }
   ;;
 
-  let straight ?precondition ?postcondition ~to_pidgin ~route handler =
+  let straight' ?precondition ?postcondition ~to_pidgin ~route handler =
     make ?precondition ?postcondition ~route (fun args param req ->
       let open Primavera.Syntax in
       let+ result = handler args param req in
       result |> to_pidgin args param req |> Response.from_value req)
   ;;
 
-  let failable ?precondition ?postcondition ~to_pidgin ~to_error ~route handler =
+  let straight ?precondition ?postcondition ~to_pidgin ~route handler =
+    straight'
+      ?precondition
+      ?postcondition
+      ~to_pidgin:(fun _ _ _ x -> to_pidgin x)
+      ~route
+      handler
+  ;;
+
+  let failable' ?precondition ?postcondition ~to_pidgin ~to_error ~route handler
+    =
     make ?precondition ?postcondition ~route (fun args param req ->
       let open Primavera.Syntax in
       let+ result = handler args param req in
@@ -81,6 +91,16 @@ struct
       | Ok result ->
         result |> to_pidgin args param req |> Response.from_value req
       | Error err -> err |> to_error args param req |> Response.from_error req)
+  ;;
+
+  let failable ?precondition ?postcondition ~to_pidgin ~to_error ~route handler =
+    failable'
+      ?precondition
+      ?postcondition
+      ~to_pidgin:(fun _ _ _ x -> to_pidgin x)
+      ~to_error:(fun _ _ _ err -> to_error err)
+      ~route
+      handler
   ;;
 
   let notify ?precondition ?postcondition ~route handler =

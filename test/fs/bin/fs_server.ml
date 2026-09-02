@@ -20,7 +20,7 @@ let ls =
   let open S in
   straight
     ~route:(route [ s "ls" ] path)
-    ~to_pidgin:(list_encoder Pidgin.Repr.string)
+    ~to_pidgin:Pidgin.Repr.(list_of string)
     (fun [] path _req -> Eff.ls path)
 ;;
 
@@ -28,7 +28,7 @@ let cat =
   let open S in
   straight
     ~route:(route [ s "cat" ] path)
-    ~to_pidgin:string_encoder
+    ~to_pidgin:Pidgin.Repr.string
     (fun [] path _req -> Eff.cat path)
 ;;
 

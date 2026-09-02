@@ -170,7 +170,8 @@ module type SERVER = sig
       and the request to have access to all informations. So encoders
       are helpers for dealing with that. But sometime, you do not want
       to deal with path, params and request, so pre-built encoder just
-      discard them. *)
+      discard them. It is only useful for {!val:straight'} and
+      {!val:failable'}. *)
 
   (** [encoder conv] is just [fun _ _ _ -> conv]. As for {!val:param},
       you can use this function to quickly build ambitious encoder. *)
@@ -252,8 +253,44 @@ module type SERVER = sig
 
   (** {1 Building services} *)
 
-  (** [straight] Describes a service that is not supposed to fail. *)
+  (** [notify] Describes a straight service that does not output anything. *)
+  val notify
+    :  ?precondition:(pidgin request -> bool)
+    -> ?postcondition:('a args -> 'param -> 'param request -> bool)
+    -> route:('a, 'param) route
+    -> ('a args -> 'param -> 'param request -> (unit, 'handler) eff)
+    -> 'handler service
+
+  (** [straight'] Describes a service that is not supposed to fail. *)
   val straight
+    :  ?precondition:(pidgin request -> bool)
+    -> ?postcondition:('a args -> 'param -> 'param request -> bool)
+    -> to_pidgin:('result -> pidgin)
+    -> route:('a, 'param) route
+    -> ('a args -> 'param -> 'param request -> ('result, 'handler) eff)
+    -> 'handler service
+
+  (** [failable'] Describes a service that can fail. *)
+  val failable
+    :  ?precondition:(pidgin request -> bool)
+    -> ?postcondition:('a args -> 'param -> 'param request -> bool)
+    -> to_pidgin:('result -> pidgin)
+    -> to_error:('error -> Error.t)
+    -> route:('a, 'param) route
+    -> ('a args
+        -> 'param
+        -> 'param request
+        -> (('result, 'error) result, 'handler) eff)
+    -> 'handler service
+
+  (** {2 With full configuration}
+
+      Those service variation gives to the finalizers ([to_pidgin] and
+      [to_error]) the full path expansion including [path], [param]
+      and [retquest]. And can be paired with {!module:Encoder}. *)
+
+  (** [straight'] Describes a service that is not supposed to fail. *)
+  val straight'
     :  ?precondition:(pidgin request -> bool)
     -> ?postcondition:('a args -> 'param -> 'param request -> bool)
     -> to_pidgin:('a args -> 'param -> 'param request -> 'result -> pidgin)
@@ -261,8 +298,8 @@ module type SERVER = sig
     -> ('a args -> 'param -> 'param request -> ('result, 'handler) eff)
     -> 'handler service
 
-  (** [failable] Describes a service that can fail. *)
-  val failable
+  (** [failable'] Describes a service that can fail. *)
+  val failable'
     :  ?precondition:(pidgin request -> bool)
     -> ?postcondition:('a args -> 'param -> 'param request -> bool)
     -> to_pidgin:('a args -> 'param -> 'param request -> 'result -> pidgin)
@@ -272,14 +309,6 @@ module type SERVER = sig
         -> 'param
         -> 'param request
         -> (('result, 'error) result, 'handler) eff)
-    -> 'handler service
-
-  (** [notify] Describes a straight service that does not output anything. *)
-  val notify
-    :  ?precondition:(pidgin request -> bool)
-    -> ?postcondition:('a args -> 'param -> 'param request -> bool)
-    -> route:('a, 'param) route
-    -> ('a args -> 'param -> 'param request -> (unit, 'handler) eff)
     -> 'handler service
 
   (** [run in_channel out_channel ~handler services] Runs the server
