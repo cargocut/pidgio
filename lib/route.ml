@@ -4,7 +4,7 @@
    SPDX-License-Identifier: BSD-3-Clause *)
 
 type ('args, 'params) t =
-  { params : 'params Params.t
+  { params : 'params Pidgin.Prism.t
   ; path : ('args, Highway.Void.t) Highway.path
   }
 
@@ -17,11 +17,11 @@ let extract_path { path; _ } req =
 
 let extract_params { params; _ } req =
   let given_params = Request.params req in
-  Params.check params given_params
+  Pidgin.Prism.check params given_params
 ;;
 
 let prepare_request { params; path } args p =
-  let params = Params.conv params p
+  let params = Pidgin.Prism.conv params p
   and path = args |> Highway.Path.to_list path |> String.concat "/" in
   path, params
 ;;

@@ -6,19 +6,22 @@
 module S = Pidgio_unix.Make (Pidgio_yojson)
 
 let ignored =
-  Pidgio.params (Pidgin.Check.const ()) (fun _ -> Pidgin.Repr.null ())
+  Pidgio.params ~check:(Pidgin.Check.const ()) ~conv:(fun _ ->
+    Pidgin.Repr.null ())
 ;;
 
 let simple_message =
   Pidgio.params
-    Pidgin.Check.(
-      record (fun fields ->
-        let+ message = req fields "message" string
-        and+ shout = opt fields "shout" bool in
-        message, Option.value ~default:false shout))
-    Pidgin.Repr.(
-      fun (message, shout) ->
-        record [ "message", string message; "shout", bool shout ])
+    ~check:
+      Pidgin.Check.(
+        record (fun fields ->
+          let+ message = req fields "message" string
+          and+ shout = opt fields "shout" bool in
+          message, Option.value ~default:false shout))
+    ~conv:
+      Pidgin.Repr.(
+        fun (message, shout) ->
+          record [ "message", string message; "shout", bool shout ])
 ;;
 
 let () =

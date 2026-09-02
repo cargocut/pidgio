@@ -84,7 +84,7 @@ module type SERVER = sig
   type ('a, 'b) path = ('a, 'b) Highway.Path.t
 
   (** [params] is a prism for dealing with route parameters. *)
-  type 'a params = 'a Params.t
+  type 'a params = 'a Pidgin.Prism.t
 
   (** [route] is a combination of a {!type:path} and {!type:params}. *)
   type ('hole, 'params) route = ('hole, 'params) Route.t

@@ -19,7 +19,7 @@ depends: [
   "dune" {>= "3.24"}
   "ocaml" {>= "5.0.0"}
   "primavera" {>= "1.1.0"}
-  "pidgin"
+  "pidgin" {>= "1.1.0"}
   "highway"
   "alcotest" {with-test & >= "1.9.1"}
   "utop" {with-dev-setup}

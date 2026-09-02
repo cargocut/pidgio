@@ -25,7 +25,7 @@
   (depends
     (ocaml (>= 5.0.0))
     (primavera (>= 1.1.0))
-    pidgin
+    (pidgin (>= 1.1.0))
     highway
 
     ;; test setup

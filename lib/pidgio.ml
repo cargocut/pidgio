@@ -8,7 +8,6 @@ module Util = Util
 module Error = Error
 module Request = Request
 module Response = Response
-module Params = Params
 module Route = Route
 module Make = Make
 module Json = Make.Json
@@ -22,7 +21,7 @@ type 'a args = 'a Highway.Args.t
 type 'a hole = 'a Highway.Hole.t
 type ('a, 'b) pattern = ('a, 'b) Highway.Pattern.t
 type ('a, 'b) path = ('a, 'b) Highway.Path.t
-type 'a params = 'a Params.t
+type 'a params = 'a Pidgin.Prism.t
 type ('hole, 'params) route = ('hole, 'params) Route.t
 
 (* Pattern definition *)
@@ -37,7 +36,7 @@ let opt = Highway.Pattern.opt
 
 (* Params definition *)
 
-let params = Params.make
+let params = Pidgin.Prism.make
 
 (* Routes *)
 

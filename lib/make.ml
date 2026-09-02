@@ -42,7 +42,7 @@ struct
   type 'a args = 'a Highway.args
   type ('a, 'b) pattern = ('a, 'b) Highway.Pattern.t
   type ('a, 'b) path = ('a, 'b) Highway.Path.t
-  type 'a params = 'a Params.t
+  type 'a params = 'a Pidgin.Prism.t
   type ('path, 'params) route = ('path, 'params) Route.t
 
   type 'handler service =

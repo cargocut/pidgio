@@ -30,7 +30,7 @@ type ('a, 'b) pattern = ('a, 'b) Highway.Pattern.t
 type ('a, 'b) path = ('a, 'b) Highway.Path.t
 
 (** [params] is an iso for dealing with route parameters. *)
-type 'a params = 'a Params.t
+type 'a params = 'a Pidgin.Prism.t
 
 (** [route] is a combination of a {!type:path} and {!type:params}. *)
 type ('hole, 'params) route = ('hole, 'params) Route.t
@@ -74,7 +74,7 @@ val opt : ?empty:string -> 'a hole -> ('a option -> 'b, 'b) pattern
 (** {1 Params definition} *)
 
 (** Build an iso for validating/producing parameters. *)
-val params : 'a Pidgin.Check.t -> 'a Pidgin.Repr.conv -> 'a params
+val params : conv:'a Pidgin.Repr.conv -> check:'a Pidgin.Check.t -> 'a params
 
 (** {1 Building routes} *)
 
@@ -100,6 +100,5 @@ module Util = Util
 module Error = Error
 module Request = Request
 module Response = Response
-module Params = Params
 module Route = Route
 module Make = Make
