@@ -1,0 +1,4 @@
+(library
+ (name pidgio_eio)
+ (public_name pidgio-eio)
+ (libraries eio eio_main pidgio))

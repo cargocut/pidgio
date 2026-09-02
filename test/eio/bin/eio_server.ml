@@ -3,7 +3,7 @@
 
    SPDX-License-Identifier: BSD-3-Clause *)
 
-module S = Pidgio_unix.Make (Pidgio_yojson)
+module S = Pidgio_eio.Make (Pidgio_yojson)
 
 let ignored =
   Pidgio.params ~check:(Pidgin.Check.const ()) ~conv:(fun _ ->
@@ -28,7 +28,7 @@ let () =
   let open Pidgio in
   let open S in
   run
-    ~handler:object end
+    ~handler:(fun _ -> object end)
     [ straight
         ~route:(route [ s "ping" ] ignored)
         ~to_pidgin:Encoder.string

@@ -45,6 +45,7 @@ module Make (Json : Pidgio.Sigs.JSON_DEVICE) = struct
     let out_channel = get_output ()
     and in_channel = get_input () in
     match run in_channel out_channel ~handler services with
+    (* KLUDGE: We probably want to improve that :) *)
     | 1 ->
       (* It is a success in fact. *)
       exit 0

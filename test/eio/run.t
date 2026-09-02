@@ -1,6 +1,6 @@
   $ frame() { printf 'Content-Length: %d\r\n\r\n%s' "$(printf '%s' "$1" | wc -c)" "$1"; }
 
-  $ frame '{"jsonrpc":"2.0","id":1,"method":"echo", "params": {"message": "foobar", "shout": true}}' | ./bin/unix_server.exe | sed 's/\r/<CR>/g'
+  $ frame '{"jsonrpc":"2.0","id":1,"method":"echo", "params": {"message": "foobar", "shout": true}}' | ./bin/eio_server.exe | sed 's/\r/<CR>/g'
   Content-Length: 42<CR>
   <CR>
   {"jsonrpc":"2.0","id":1,"result":"FOOBAR"}
@@ -11,7 +11,7 @@
   >   frame '{"jsonrpc":"2.0","id":3,"method":"ping"}'
   >   frame '{"jsonrpc":"2.0","id":4,"method":"echo", "params": {"message": "FOO"}}'
   >   frame '{"jsonrpc":"2.0","id":5,"method":"echo", "params": {"message": "FOO", "shout": true}}'
-  > } | ./bin/unix_server.exe | sed 's/\r/<CR>/g'
+  > } | ./bin/eio_server.exe | sed 's/\r/<CR>/g'
   Content-Length: 40<CR>
   <CR>
   {"jsonrpc":"2.0","id":1,"result":"pong"}Content-Length: 43<CR>
@@ -33,7 +33,7 @@
   >   frame '{"jsonrpc": "2.0", "id": 5, "method": "do not exists"}'
   >   frame '{"jsonrpc":"2.0","id":6,"method":"echo", "params": {"message": "FOO", "shout": true}}'
   >   frame '{"jsonrpc":"2.0","id":6,"method":"echo", "params": {"typo": "FOO", "shout": true}}'
-  > } | ./bin/unix_server.exe | sed 's/\r/<CR>/g'
+  > } | ./bin/eio_server.exe | sed 's/\r/<CR>/g'
   Content-Length: 40<CR>
   <CR>
   {"jsonrpc":"2.0","id":1,"result":"pong"}Content-Length: 43<CR>

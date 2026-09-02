@@ -55,3 +55,14 @@
     (ocaml (>= 5.0.0))
     (pidgio (= :version))
     (pidgio-yojson (and (= :version) :with-test))))
+
+(package
+  (name pidgio-eio)
+  (synopsis "An EIO Pidgio server")
+  (description "An EIO Pidgio server")
+  (depends
+    (ocaml (>= 5.0.0))
+    (pidgio (= :version))
+    (eio (>= 1.5))
+    (eio_main (>= 1.5))
+    (pidgio-yojson (and (= :version) :with-test))))
