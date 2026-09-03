@@ -5,10 +5,6 @@
 
 module S = Pidgio_eio.Make (Pidgio_yojson)
 
-let ignored =
-  S.param ~check:(Pidgin.Check.const ()) ~conv:(fun _ -> Pidgin.Repr.null ())
-;;
-
 let simple_message =
   S.param
     ~check:
@@ -28,11 +24,11 @@ let () =
   run
     ~handler:(fun _ -> object end)
     [ straight
-        ~route:(route [ s "ping" ] ignored)
+        ~&[ s "ping" ]
         ~to_pidgin:Pidgin.Repr.string
         (fun [] () _ -> Primavera.return "pong")
     ; straight
-        ~route:(route [ s "echo" ] simple_message)
+        ([ s "echo" ] <&> simple_message)
         ~to_pidgin:Pidgin.Repr.string
         (fun [] (message, shout) _req ->
            let open Primavera in

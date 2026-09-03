@@ -66,14 +66,14 @@ struct
     Service { precondition; route; postcondition; handler; is_notif }
   ;;
 
-  let straight ?precondition ?postcondition ~to_pidgin ~route handler =
+  let straight ?precondition ?postcondition ~to_pidgin route handler =
     make ?precondition ?postcondition ~route (fun args param req ->
       let open Primavera.Syntax in
       let+ result = handler args param req in
       result |> to_pidgin |> Response.from_value req)
   ;;
 
-  let failable ?precondition ?postcondition ~to_pidgin ~to_error ~route handler =
+  let failable ?precondition ?postcondition ~to_pidgin ~to_error route handler =
     make ?precondition ?postcondition ~route (fun args param req ->
       let open Primavera.Syntax in
       let+ result = handler args param req in
@@ -82,7 +82,7 @@ struct
       | Error err -> err |> to_error |> Response.from_error req)
   ;;
 
-  let notify ?precondition ?postcondition ~route handler =
+  let notify ?precondition ?postcondition route handler =
     make
       ~is_notif:true
       ?precondition
@@ -259,4 +259,13 @@ struct
   (* Routes *)
 
   let route = Route.make
+
+  (* Infix operators *)
+
+  module Infix = struct
+    let ( <&> ) path prism = Route.make path prism
+    let ( ~& ) path = path <&> ignore_param
+  end
+
+  include Infix
 end

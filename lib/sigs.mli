@@ -177,7 +177,7 @@ module type SERVER = sig
   val notify
     :  ?precondition:(pidgin request -> bool)
     -> ?postcondition:('a args -> 'param -> 'param request -> bool)
-    -> route:('a, 'param) route
+    -> ('a, 'param) route
     -> ('a args -> 'param -> 'param request -> (unit, 'handler) eff)
     -> 'handler service
 
@@ -186,7 +186,7 @@ module type SERVER = sig
     :  ?precondition:(pidgin request -> bool)
     -> ?postcondition:('a args -> 'param -> 'param request -> bool)
     -> to_pidgin:('result -> pidgin)
-    -> route:('a, 'param) route
+    -> ('a, 'param) route
     -> ('a args -> 'param -> 'param request -> ('result, 'handler) eff)
     -> 'handler service
 
@@ -196,7 +196,7 @@ module type SERVER = sig
     -> ?postcondition:('a args -> 'param -> 'param request -> bool)
     -> to_pidgin:('result -> pidgin)
     -> to_error:('error -> Error.t)
-    -> route:('a, 'param) route
+    -> ('a, 'param) route
     -> ('a args
         -> 'param
         -> 'param request
@@ -211,6 +211,23 @@ module type SERVER = sig
     -> handler:'handler
     -> 'handler service list
     -> int t
+
+  (** {1 Infix}
+
+      Some infix operators. *)
+
+  module Infix : sig
+    (** [path <&> prism] is [route path prism]. *)
+    val ( <&> )
+      :  ('args, Highway.Void.t) path
+      -> 'param param
+      -> ('args, 'param) route
+
+    (** [~&path] is [route path ignore_param]. *)
+    val ( ~& ) : ('a, Highway.Void.t) path -> ('a, unit) route
+  end
+
+  include module type of Infix (** @inline *)
 end
 
 module type JSON = sig
