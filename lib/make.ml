@@ -259,12 +259,23 @@ struct
 
   let route = Route.make
 
+  (* Eff helpers *)
+
+  let return = Eff.return
+
   (* Infix operators *)
 
   module Infix = struct
-    let ( <&> ) path prism = Route.make path prism
-    let ( ~& ) path = path <&> ignore_param
+    let ( & ) path prism = Route.make path prism
+    let ( ~& ) path = path & ignore_param
+
+    include Eff.Infix
   end
 
   include Infix
+
+  (* Bindings operators *)
+
+  module Syntax = Eff.Syntax
+  include Syntax
 end

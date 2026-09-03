@@ -20,7 +20,7 @@ let with_content = S.(pair_param path string_param)
 let ls =
   let open S in
   straight
-    ([ s "ls" ] <&> path)
+    ([ s "ls" ] & path)
     ~to_pidgin:Pidgin.Repr.(list_of string)
     (fun [] path _req -> F.ls path)
 ;;
@@ -28,7 +28,7 @@ let ls =
 let cat =
   let open S in
   straight
-    ([ s "cat" ] <&> path)
+    ([ s "cat" ] & path)
     ~to_pidgin:Pidgin.Repr.string
     (fun [] path _req -> F.cat path)
 ;;
@@ -36,20 +36,18 @@ let cat =
 let write_file =
   let open S in
   notify
-    ([ s "write"; s "file" ] <&> with_content)
+    ([ s "write"; s "file" ] & with_content)
     (fun [] (path, content) _req ->
-       let open F in
-       let+ _ = write_file path content in
+       let+ _ = F.write_file path content in
        ())
 ;;
 
 let delete_file =
   let open S in
   notify
-    ([ s "delete"; s "file" ] <&> path)
+    ([ s "delete"; s "file" ] & path)
     (fun [] path _req ->
-       let open F in
-       let+ _ = delete_file path in
+       let+ _ = F.delete_file path in
        ())
 ;;
 

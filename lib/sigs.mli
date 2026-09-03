@@ -96,6 +96,11 @@ module type SERVER = sig
       effects for use in a [Primavera] context. *)
   type 'handler service
 
+  (** {1 Utils} *)
+
+  (** [return x] wrap [x] into the {!val:eff} context. *)
+  val return : 'a -> ('a, 'handler) eff
+
   (** {1 Describing patterns} *)
 
   (** {2 Literal Pattern} *)
@@ -217,17 +222,25 @@ module type SERVER = sig
       Some infix operators. *)
 
   module Infix : sig
-    (** [path <&> prism] is [route path prism]. *)
-    val ( <&> )
+    (** [path & prism] is [route path prism]. *)
+    val ( & )
       :  ('args, Highway.Void.t) path
       -> 'param param
       -> ('args, 'param) route
 
     (** [~&path] is [route path ignore_param]. *)
     val ( ~& ) : ('a, Highway.Void.t) path -> ('a, unit) route
+
+    include module type of Eff.Infix
   end
 
   include module type of Infix (** @inline *)
+
+  (** {2 Bindings Operators} *)
+
+  module Syntax = Eff.Syntax
+
+  include module type of Syntax (** @inline *)
 end
 
 module type JSON = sig
