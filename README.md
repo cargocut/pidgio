@@ -6,9 +6,13 @@
 # pidgio
 
 > **Pidgio** is a very small JSONRPC library for defining servers that
-> uses Pidgin to serialize results and deserialize requests. It writes
-> to `stdout` and reads from `stdin`. It was designed primarily to be
-> called by another program (such as Emacs).
+> uses [Pidgin](https://github.com/cargocut/pidgin) to encode and
+> decode JSON, it uses [Highway](https://github.com/cargocut/highway)
+> for describing route's path and
+> [Primavera](https://github.com/cargocut/primavera) for abstracting
+> over dependencies. It writes to `stdout` and reads from `stdin`. It
+> was designed primarily to be called by another program (such as
+> Emacs).
 
 ## Trivia
 

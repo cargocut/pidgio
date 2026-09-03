@@ -101,6 +101,10 @@ module type SERVER = sig
   (** [return x] wrap [x] into the {!val:eff} context. *)
   val return : 'a -> ('a, 'handler) eff
 
+  (** [error ~code ?message ()] build a custom error. See
+      {!val:Error.custom}. *)
+  val error : code:int -> ?message:string -> unit -> Error.t
+
   (** {1 Describing patterns} *)
 
   (** {2 Literal Pattern} *)

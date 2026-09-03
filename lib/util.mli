@@ -3,6 +3,8 @@
 
    SPDX-License-Identifier: BSD-3-Clause *)
 
+(** Some generics helpers mostly for internal development. *)
+
 (** [jsonrpc ?id fields] builds a JSON-RPC header. *)
 val jsonrpc : ?id:int -> (string * Pidgin.Repr.t) list -> Pidgin.Repr.t
 

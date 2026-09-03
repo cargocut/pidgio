@@ -259,6 +259,10 @@ struct
 
   let route = Route.make
 
+  (* Errors *)
+
+  let error = Error.custom_error
+
   (* Eff helpers *)
 
   let return = Eff.return
