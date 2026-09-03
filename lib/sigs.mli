@@ -162,86 +162,6 @@ module type SERVER = sig
   (** Describe a param for [pair]. *)
   val pair_param : 'a param -> 'b param -> ('a * 'b) param
 
-  (** {1 Encoders definition}
-
-      {!module:Encoder} are used to {i finalized} a Pidgio Handler. It
-      allows to lift ocaml value into pidgin one. For usability
-      purpose, an encoder also takes the path parameters, the param
-      and the request to have access to all informations. So encoders
-      are helpers for dealing with that. But sometime, you do not want
-      to deal with path, params and request, so pre-built encoder just
-      discard them. It is only useful for {!val:straight'} and
-      {!val:failable'}. *)
-
-  (** [encoder conv] is just [fun _ _ _ -> conv]. As for {!val:param},
-      you can use this function to quickly build ambitious encoder. *)
-  val encoder
-    :  'a Pidgin.Repr.conv
-    -> 'b args
-    -> 'p
-    -> 'p request
-    -> 'a Pidgin.Repr.conv
-
-  (** Encode null values. *)
-  val null_encoder : 'a args -> 'b -> 'b request -> 'c Pidgin.Repr.conv
-
-  (** Encode [string]. *)
-  val string_encoder : 'a args -> 'b -> 'b request -> string Pidgin.Repr.conv
-
-  (** Encode [int]. *)
-  val int_encoder : 'a args -> 'b -> 'b request -> int Pidgin.Repr.conv
-
-  (** Encode [float]. *)
-  val float_encoder : 'a args -> 'b -> 'b request -> float Pidgin.Repr.conv
-
-  (** Encode [char]. *)
-  val char_encoder : 'a args -> 'b -> 'b request -> char Pidgin.Repr.conv
-
-  (** Encode [bool]. *)
-  val bool_encoder : 'a args -> 'b -> 'b request -> bool Pidgin.Repr.conv
-
-  (** Encode [list]. *)
-  val list_encoder
-    :  'v Pidgin.Repr.conv
-    -> 'a args
-    -> 'b
-    -> 'b request
-    -> 'v list Pidgin.Repr.conv
-
-  (** Encode [option]. *)
-  val opt_encoder
-    :  'v Pidgin.Repr.conv
-    -> 'a args
-    -> 'b
-    -> 'b request
-    -> 'v option Pidgin.Repr.conv
-
-  (** Encode [pair]. *)
-  val pair_encoder
-    :  'a Pidgin.Repr.conv
-    -> 'b Pidgin.Repr.conv
-    -> 'c args
-    -> 'd
-    -> 'd request
-    -> ('a * 'b) Pidgin.Repr.conv
-
-  (** Encode [records]. *)
-  val record_encoder
-    :  ?normalize_keys:bool
-    -> 'a args
-    -> 'b
-    -> 'b request
-    -> (string * pidgin) list Pidgin.Repr.conv
-
-  (** For the [~to_error] of {!val:failable} *)
-  val error_encoder
-    :  ('a -> Error.t)
-    -> 'b args
-    -> 'c
-    -> 'c request
-    -> 'a
-    -> Error.t
-
   (** {1 Building routes} *)
 
   (** [route path param_check] wrap a {!type:path} and a
@@ -261,7 +181,7 @@ module type SERVER = sig
     -> ('a args -> 'param -> 'param request -> (unit, 'handler) eff)
     -> 'handler service
 
-  (** [straight'] Describes a service that is not supposed to fail. *)
+  (** [straight] Describes a service that is not supposed to fail. *)
   val straight
     :  ?precondition:(pidgin request -> bool)
     -> ?postcondition:('a args -> 'param -> 'param request -> bool)
@@ -270,40 +190,12 @@ module type SERVER = sig
     -> ('a args -> 'param -> 'param request -> ('result, 'handler) eff)
     -> 'handler service
 
-  (** [failable'] Describes a service that can fail. *)
+  (** [failable] Describes a service that can fail. *)
   val failable
     :  ?precondition:(pidgin request -> bool)
     -> ?postcondition:('a args -> 'param -> 'param request -> bool)
     -> to_pidgin:('result -> pidgin)
     -> to_error:('error -> Error.t)
-    -> route:('a, 'param) route
-    -> ('a args
-        -> 'param
-        -> 'param request
-        -> (('result, 'error) result, 'handler) eff)
-    -> 'handler service
-
-  (** {2 With full configuration}
-
-      Those service variation gives to the finalizers ([to_pidgin] and
-      [to_error]) the full path expansion including [path], [param]
-      and [retquest]. And can be paired with {!module:Encoder}. *)
-
-  (** [straight'] Describes a service that is not supposed to fail. *)
-  val straight'
-    :  ?precondition:(pidgin request -> bool)
-    -> ?postcondition:('a args -> 'param -> 'param request -> bool)
-    -> to_pidgin:('a args -> 'param -> 'param request -> 'result -> pidgin)
-    -> route:('a, 'param) route
-    -> ('a args -> 'param -> 'param request -> ('result, 'handler) eff)
-    -> 'handler service
-
-  (** [failable'] Describes a service that can fail. *)
-  val failable'
-    :  ?precondition:(pidgin request -> bool)
-    -> ?postcondition:('a args -> 'param -> 'param request -> bool)
-    -> to_pidgin:('a args -> 'param -> 'param request -> 'result -> pidgin)
-    -> to_error:('a args -> 'param -> 'param request -> 'error -> Error.t)
     -> route:('a, 'param) route
     -> ('a args
         -> 'param

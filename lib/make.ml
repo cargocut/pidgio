@@ -66,41 +66,20 @@ struct
     Service { precondition; route; postcondition; handler; is_notif }
   ;;
 
-  let straight' ?precondition ?postcondition ~to_pidgin ~route handler =
+  let straight ?precondition ?postcondition ~to_pidgin ~route handler =
     make ?precondition ?postcondition ~route (fun args param req ->
       let open Primavera.Syntax in
       let+ result = handler args param req in
-      result |> to_pidgin args param req |> Response.from_value req)
+      result |> to_pidgin |> Response.from_value req)
   ;;
 
-  let straight ?precondition ?postcondition ~to_pidgin ~route handler =
-    straight'
-      ?precondition
-      ?postcondition
-      ~to_pidgin:(fun _ _ _ x -> to_pidgin x)
-      ~route
-      handler
-  ;;
-
-  let failable' ?precondition ?postcondition ~to_pidgin ~to_error ~route handler
-    =
+  let failable ?precondition ?postcondition ~to_pidgin ~to_error ~route handler =
     make ?precondition ?postcondition ~route (fun args param req ->
       let open Primavera.Syntax in
       let+ result = handler args param req in
       match result with
-      | Ok result ->
-        result |> to_pidgin args param req |> Response.from_value req
-      | Error err -> err |> to_error args param req |> Response.from_error req)
-  ;;
-
-  let failable ?precondition ?postcondition ~to_pidgin ~to_error ~route handler =
-    failable'
-      ?precondition
-      ?postcondition
-      ~to_pidgin:(fun _ _ _ x -> to_pidgin x)
-      ~to_error:(fun _ _ _ err -> to_error err)
-      ~route
-      handler
+      | Ok result -> result |> to_pidgin |> Response.from_value req
+      | Error err -> err |> to_error |> Response.from_error req)
   ;;
 
   let notify ?precondition ?postcondition ~route handler =
@@ -276,21 +255,6 @@ struct
       ~check:(Pidgin.Check.pair a_check b_check)
       ~conv:(Pidgin.Repr.pair a_conv b_conv)
   ;;
-
-  (* Encoders *)
-
-  let encoder = Encoder.make
-  let string_encoder = Encoder.string
-  let null_encoder = Encoder.null
-  let int_encoder = Encoder.int
-  let float_encoder = Encoder.float
-  let bool_encoder = Encoder.bool
-  let char_encoder = Encoder.char
-  let list_encoder = Encoder.list
-  let opt_encoder = Encoder.option
-  let pair_encoder = Encoder.pair
-  let record_encoder = Encoder.record
-  let error_encoder = Encoder.error
 
   (* Routes *)
 
