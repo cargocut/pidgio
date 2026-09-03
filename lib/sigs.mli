@@ -48,18 +48,18 @@ module type SERVER = sig
   (** Out Channel *)
   type output
 
-  (** {1 Primavera}
+  (** {1 Primavera Effects handlers}
 
       The server wrap a Primavera dependency injection on top of the
       given monad ['a t]. *)
 
-  module Primavera : Primavera.Sig.S1 with type 'a output = 'a t
+  module Eff : Primavera.Sig.S1 with type 'a output = 'a t
 
   (** {1 Types} *)
 
   (** Hold a value of type ['a] that needs ['handler] to be
       performed. *)
-  type ('a, 'handler) eff = ('a, 'handler) Primavera.t
+  type ('a, 'handler) eff = ('a, 'handler) Eff.t
 
   (** Service should return a pidgin expression. *)
   type pidgin = Pidgin.Repr.t

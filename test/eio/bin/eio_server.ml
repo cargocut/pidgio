@@ -26,12 +26,12 @@ let () =
     [ straight
         ~&[ s "ping" ]
         ~to_pidgin:Pidgin.Repr.string
-        (fun [] () _ -> Primavera.return "pong")
+        (fun [] () _ -> Eff.return "pong")
     ; straight
         ([ s "echo" ] <&> simple_message)
         ~to_pidgin:Pidgin.Repr.string
         (fun [] (message, shout) _req ->
-           let open Primavera in
+           let open Eff in
            let message =
              if shout then String.uppercase_ascii message else message
            in

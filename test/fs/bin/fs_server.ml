@@ -7,6 +7,7 @@
    provided by Virtfs. *)
 
 module S = Server
+module F = Eff
 
 let path =
   Pidgin.Prism.make
@@ -21,7 +22,7 @@ let ls =
   straight
     ([ s "ls" ] <&> path)
     ~to_pidgin:Pidgin.Repr.(list_of string)
-    (fun [] path _req -> Eff.ls path)
+    (fun [] path _req -> F.ls path)
 ;;
 
 let cat =
@@ -29,7 +30,7 @@ let cat =
   straight
     ([ s "cat" ] <&> path)
     ~to_pidgin:Pidgin.Repr.string
-    (fun [] path _req -> Eff.cat path)
+    (fun [] path _req -> F.cat path)
 ;;
 
 let write_file =
@@ -37,7 +38,7 @@ let write_file =
   notify
     ([ s "write"; s "file" ] <&> with_content)
     (fun [] (path, content) _req ->
-       let open Eff in
+       let open F in
        let+ _ = write_file path content in
        ())
 ;;
@@ -47,7 +48,7 @@ let delete_file =
   notify
     ([ s "delete"; s "file" ] <&> path)
     (fun [] path _req ->
-       let open Eff in
+       let open F in
        let+ _ = delete_file path in
        ())
 ;;
@@ -79,6 +80,6 @@ let fs =
 ;;
 
 let () =
-  let handler = Eff.handler fs in
+  let handler = F.handler fs in
   Server.run ~handler [ ls; cat; write_file; delete_file ]
 ;;

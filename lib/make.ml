@@ -30,12 +30,12 @@ module Server
     (D : Sigs.IO with type 'a t = 'a M.t)
     (Json : Sigs.JSON_DEVICE) =
 struct
-  module Primavera = Primavera.Make.S1 (M)
+  module Eff = Primavera.Make.S1 (M)
 
   type input = D.input
   type output = D.output
   type 'a t = 'a M.t
-  type ('a, 'handler) eff = ('a, 'handler) Primavera.t
+  type ('a, 'handler) eff = ('a, 'handler) Eff.t
   type pidgin = Pidgin.Repr.t
   type 'a request = 'a Request.t
   type 'a hole = 'a Highway.Hole.t
@@ -68,14 +68,14 @@ struct
 
   let straight ?precondition ?postcondition ~to_pidgin route handler =
     make ?precondition ?postcondition ~route (fun args param req ->
-      let open Primavera.Syntax in
+      let open Eff.Syntax in
       let+ result = handler args param req in
       result |> to_pidgin |> Response.from_value req)
   ;;
 
   let failable ?precondition ?postcondition ~to_pidgin ~to_error route handler =
     make ?precondition ?postcondition ~route (fun args param req ->
-      let open Primavera.Syntax in
+      let open Eff.Syntax in
       let+ result = handler args param req in
       match result with
       | Ok result -> result |> to_pidgin |> Response.from_value req
@@ -89,7 +89,7 @@ struct
       ?postcondition
       ~route
       (fun args param req ->
-         let open Primavera.Syntax in
+         let open Eff.Syntax in
          let+ () = handler args param req in
          Pidgin.Repr.null () |> Response.from_value req)
   ;;
@@ -119,13 +119,12 @@ struct
 
   let one_of req services =
     let id = Request.id req in
-    let open Primavera in
+    let open Eff in
     match dispatch req services with
     | Ok computation ->
       let+ result = computation in
       Option.map (fun _ -> result) id
-    | Error err ->
-      Primavera.return @@ Option.map (fun _ -> Error.to_pidgin err) id
+    | Error err -> Eff.return @@ Option.map (fun _ -> Error.to_pidgin err) id
   ;;
 
   type header_error =
@@ -176,16 +175,16 @@ struct
     match Json.request_from_string body with
     | Error err ->
       err |> Response.from_error Request.dummy |> Option.some |> M.return
-    | Ok (One req) -> Primavera.run ~handler (one_of req) services
+    | Ok (One req) -> Eff.run ~handler (one_of req) services
     | Ok (Batch reqs) ->
       let eff () =
-        let open Primavera in
+        let open Eff in
         let+ result = List.traverse (fun req -> one_of req services) reqs in
         match Stdlib.List.filter_map (fun x -> x) result with
         | [] -> None
         | xs -> Some (Pidgin.Repr.list xs)
       in
-      Primavera.run ~handler eff ()
+      Eff.run ~handler eff ()
   ;;
 
   let run input output ~handler services =

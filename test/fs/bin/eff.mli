@@ -3,7 +3,7 @@
 
    SPDX-License-Identifier: BSD-3-Clause *)
 
-include module type of Server.Primavera
+include module type of Server.Eff
 
 class type handler = object
   method ls : Virtfs.Path.t -> string list
