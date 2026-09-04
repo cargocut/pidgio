@@ -258,6 +258,11 @@ struct
   (* Routes *)
 
   let route = Route.make
+  let make_pidgin_request = Route.make_request
+
+  let make_request_string ?id route args params =
+    params |> make_pidgin_request ?id route args |> Json.response_to_string
+  ;;
 
   (* Errors *)
 

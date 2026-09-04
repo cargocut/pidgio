@@ -180,6 +180,15 @@ module type SERVER = sig
     -> 'param param
     -> ('args, 'param) route
 
+  (** [make_request_string ?id route args param] constructs the string
+      that corresponds to the query for the given route. *)
+  val make_request_string
+    :  ?id:int
+    -> ('args, 'param) route
+    -> 'args args
+    -> 'param
+    -> string
+
   (** {1 Building services} *)
 
   (** [notify] Describes a straight service that does not output anything. *)
