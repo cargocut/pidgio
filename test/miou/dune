@@ -1,0 +1,7 @@
+(cram
+ (applies_to :whole_subtree)
+ (package pidgio-miou)
+ (deps
+  (package pidgio)
+  (package pidgio-miou)
+  %{exe:bin/miou_server.exe}))
