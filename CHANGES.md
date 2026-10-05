@@ -1,8 +1,8 @@
-### Unreleased
+### v0.0.2 (Nantes)
 
 #### pidgio-miou
 
-- Add the support of miou (@dinosaure, #1)
+- First release of `pidgio-miou`
 
 ### v0.0.1 (Nantes)
 
