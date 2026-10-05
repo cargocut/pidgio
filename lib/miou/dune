@@ -1,0 +1,4 @@
+(library
+ (name pidgio_miou)
+ (public_name pidgio-miou)
+ (libraries flux pidgio))

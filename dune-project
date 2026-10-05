@@ -67,3 +67,15 @@
     (eio (>= 1.5))
     (eio_main (>= 1.5))
     (pidgio-yojson (and (= :version) :with-test))))
+
+(package
+  (name pidgio-miou)
+  (synopsis "A Miou/Flux Pidgio server")
+  (description
+    "A Pidgio server that reads a Flux source and writes to a Flux sink, on top of the Miou scheduler")
+  (depends
+    (ocaml (>= 5.0.0))
+    (pidgio (= :version))
+    (miou (>= 0.10.0))
+    (flux (>= 0.0.1~beta8))
+    (pidgio-yojson (and (= :version) :with-test))))

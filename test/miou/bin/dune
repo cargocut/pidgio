@@ -1,0 +1,3 @@
+(executable
+ (name miou_server)
+ (libraries pidgin pidgio pidgio-miou pidgio-yojson flux miou.unix))
